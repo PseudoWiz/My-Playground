@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Orb Runner Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.159.0/build/three.module.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="hud">
+      <div class="score">Score: <span id="score-value">0</span></div>
+      <div class="hint">WASD to move the cube</div>
+    </div>
+    <div id="app"></div>
+
+    <script type="module">
+      import renderer from '../src/core/renderer.js';
+      import scene from '../src/core/scene.js';
+      import camera, { followPlayer } from '../src/core/camera.js';
+      import { startLoop, addUpdatable } from '../src/core/loop.js';
+      import createControls from '../src/game/controls.js';
+      import Player from '../src/game/player.js';
+      import { createWorld } from '../src/game/world.js';
+      import setupResize from '../src/utils/resize.js';
+
+      const controls = createControls();
+      const world = createWorld(scene);
+      const player = new Player(controls, world.obstacles);
+
+      scene.add(player.mesh);
+      world.setPlayer(player);
+
+      addUpdatable(controls);
+      addUpdatable(player);
+      addUpdatable(world);
+      addUpdatable({
+        update() {
+          followPlayer(player);
+        },
+      });
+
+      setupResize(renderer, camera);
+      startLoop(renderer, scene, camera);
+    </script>
+  </body>
+</html>
